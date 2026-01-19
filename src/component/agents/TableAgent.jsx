@@ -1,37 +1,36 @@
 import { useState } from 'react';
-import { Row, Col, Form, Table } from 'react-bootstrap';
+import { Row, Col, Form, Table, Button } from 'react-bootstrap';
+
 import 'bootstrap/dist/css/bootstrap.min.css';
 
 const TableAgent = ({ onViewDetail }) => {
+
   const [itemsPerPage, setItemsPerPage] = useState(10);
   
   const agents = [
     {
       id: 1,
-      email: "thanhhv@gmail.com",
-      name: "Nguyen Van Thanh",
-      address: "Số 35, Xuân Đỉnh, HN",
-      status: "Mới",
-      registerDate: "20-01-2015",
-      balance: 33000,
+      code: 'DH001',
+      type: "Thực Phẩm Chức Năng",
+      name: "Thực Phẩm Chức Năng BV Gan",
+      uses: "",
+      manufacturer: "Công ty Dược ABC",
     },
     {
       id: 2,
-      email: "donglv@gmail.com",
-      name: "Luu Van Dong",
-      address: "Hoa Lac, HN",
-      status: "Mới",
-      registerDate: "14-01-2026",
-      balance: 83000,
+      code: 'DH002',
+      type: "",
+      name: "Test",
+      uses: "",
+      manufacturer: "",
     }
   ];
 
-  // Format balance with dots (e.g., 33000 -> 33.000)
-  const formatBalance = (balance) => {
+  
+  const _formatBalance = (balance) => {
     return balance.toString().replace(/\B(?=(\d{3})+(?!\d))/g, '.');
   };
 
-  // Create empty rows to fill the table
   const emptyRows = Array.from({ length: itemsPerPage - agents.length }, (_, i) => i + agents.length + 1);
 
   return (
@@ -48,14 +47,14 @@ const TableAgent = ({ onViewDetail }) => {
             >
               <option value={10}>10</option>
               <option value={20}>20</option>
-              <option value={50}>50</option>
+              {/* <option value={50}>50</option> */}
             </Form.Select>
           </div>
         </Col>
-        <Col md={8}>
-          <span>Đại Lý</span>
+        <Col md={6}>
+          <span>Dược Phẩm</span>
         </Col>
-        <Col md={2} className="text-end">
+        <Col md={4} className="text-end">
           <a href="#" className="text-decoration-none me-3">Previous</a>
           <a href="#" className="text-decoration-none">Next</a>
         </Col>
@@ -66,12 +65,11 @@ const TableAgent = ({ onViewDetail }) => {
         <thead style={{ backgroundColor: '#e3f2fd' }}>
           <tr>
             <th>STT</th>
-            <th>Email</th>
-            <th>Tên Đại Lý</th>
-            <th>Địa Chỉ</th>
-            <th>Trạng Thái</th>
-            <th>Ngày Đăng Ký</th>
-            <th>Số Dư Tài Khoản</th>
+            <th>Mã</th>
+            <th>Tên</th>
+            <th>Loại</th>
+            <th>Công Dụng</th>
+            <th>Nhà SX</th>
             <th></th>
           </tr>
         </thead>
@@ -88,14 +86,13 @@ const TableAgent = ({ onViewDetail }) => {
                     onViewDetail(agent);
                   }}
                 >
-                  {agent.email}
+                  {agent.code || `DH${String(agent.id).padStart(3, '0')}`}
                 </a>
               </td>
               <td>{agent.name}</td>
-              <td>{agent.address}</td>
-              <td>{agent.status}</td>
-              <td>{agent.registerDate}</td>
-              <td>{formatBalance(agent.balance)}</td>
+              <td>{agent.type}</td>
+              <td>{agent.uses || agent.congdung || ''}</td>
+              <td>{agent.manufacturer || agent.nhasx || ''}</td>
               <td>
                 <a 
                   href="#" 
@@ -118,8 +115,7 @@ const TableAgent = ({ onViewDetail }) => {
               <td></td>
               <td></td>
               <td></td>
-              <td></td>
-              <td></td>
+              
             </tr>
           ))}
         </tbody>
@@ -127,7 +123,7 @@ const TableAgent = ({ onViewDetail }) => {
 
       {/* Bottom Section */}
       <div className="mt-3">
-        <span>Hiển thị từ 0 đến 0 trên 0 đại lý (Show from 0 to 0 of 0 agents)</span>
+        <span>Hiển thị từ 0 đến 0 trên 0 dược phẩm (Show from 0 to 0 of 0 phamacies)</span>
       </div>
     </div>
   );

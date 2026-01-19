@@ -1,10 +1,13 @@
 import React from "react";
 import { Container, Nav } from "react-bootstrap";
+import { NavLink, useLocation } from "react-router-dom";
 import Header from "./Header.jsx";
 import Footer from "./Footer.jsx";  
 import 'bootstrap/dist/css/bootstrap.min.css';
 
-const HomeLayout = ({ children, onLogout, onListAgent, showSidebar = true }) => {
+const HomeLayout = ({ children, onLogout, showSidebar = true }) => {
+    const location = useLocation();
+
     return (
         <div className="d-flex flex-column min-vh-100">
             <Header onLogout={onLogout} />
@@ -12,12 +15,12 @@ const HomeLayout = ({ children, onLogout, onListAgent, showSidebar = true }) => 
             {showSidebar && (
                 <div className="bg-light border-bottom">
                     <Container fluid>
-                        <Nav variant="underline" defaultActiveKey="/home">
+                        <Nav variant="underline" activeKey={location.pathname}>
                             <Nav.Item>
-                                <Nav.Link href="#" active>Trang Chủ</Nav.Link>
+                                <Nav.Link as={NavLink} to="/" end>Trang Chủ</Nav.Link>
                             </Nav.Item>
                             <Nav.Item>
-                                <Nav.Link href="#" onClick={onListAgent}>Quản Lý Đại Lý</Nav.Link>
+                                <Nav.Link as={NavLink} to="/phamacy">Danh Sách Dược Phẩm</Nav.Link>
                             </Nav.Item>
                         </Nav>
                     </Container>
