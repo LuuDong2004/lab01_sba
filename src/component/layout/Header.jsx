@@ -1,17 +1,18 @@
 import React from 'react';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import { Navbar, Container, Nav, Button } from 'react-bootstrap';
+import { Link } from 'react-router-dom';
 
 const Header = ({ onLogout }) => {
     return (
         <Navbar bg="light" expand="lg" className="border-bottom">
             <Container fluid>
-                <Navbar.Brand href="/">Logo</Navbar.Brand>
+                <Navbar.Brand as={Link} to="/">Logo</Navbar.Brand>
                 <Navbar.Toggle aria-controls="basic-navbar-nav" />
                 <Navbar.Collapse id="basic-navbar-nav" className="justify-content-between">
                     <Nav className="mx-auto">
                         <Navbar.Text className="fw-bold fs-5 text-dark">
-                            Quản Lý Đại Lý
+                            Quản Lý Dược Phẩm
                         </Navbar.Text>
                     </Nav>
                     <Nav>
