@@ -13,7 +13,7 @@ const TableAgent = ({ onViewDetail }) => {
       code: 'DH001',
       type: "Thực Phẩm Chức Năng",
       name: "Thực Phẩm Chức Năng BV Gan",
-      uses: "",
+      uses: "Hỗ trợ bảo vệ gan, tăng cường chức năng gan",
       manufacturer: "Công ty Dược ABC",
     },
     {
