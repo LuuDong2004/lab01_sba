@@ -1,59 +1,59 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Form, Button, Row, Col } from 'react-bootstrap';
 import { useNavigate, useParams } from 'react-router-dom';
+import { foodService } from '../../services/foodService';
+import { categoryService } from '../../services/categoryService';
 import 'bootstrap/dist/css/bootstrap.min.css';
 
 const EditAgentForm = () => {
   const navigate = useNavigate();
   const { id } = useParams();
-  
-  // Mock data - trong thực tế sẽ fetch từ API
-  const mockPharmacy = [
-    {
-      id: 1,
-      code: 'DH001',
-      name: 'Thực Phẩm Chức Năng BV Gan',
-      type: 'Thực Phẩm Chức Năng',
-      price: '',
-      uses: '',
-      usageInstructions: '',
-      manufacturer: 'Công ty Dược ABC'
-    },
-    {
-      id: 2,
-      code: 'DH002',
-      name: 'Test',
-      type: '',
-      price: '',
-      uses: '',
-      usageInstructions: '',
-      manufacturer: ''
-    }
-  ];
+  const [loading, setLoading] = useState(true);
+  const [saving, setSaving] = useState(false);
+  const [categories, setCategories] = useState([]);
 
-  const emptyForm = {
+  const [formData, setFormData] = useState({
     code: '',
-    name: '',
-    type: '',
+    foodName: '',
+    categoryId: '',
     price: '',
-    uses: '',
-    usageInstructions: '',
+    expiredDate: '',
+    stock: '',
     manufacturer: ''
-  };
-
-  const [formData, setFormData] = useState(() => {
-    const pharmacy = mockPharmacy.find(p => p.id === Number.parseInt(id ?? '', 10));
-    if (!pharmacy) return emptyForm;
-    return {
-      code: pharmacy.code ?? '',
-      name: pharmacy.name ?? '',
-      type: pharmacy.type ?? '',
-      price: pharmacy.price ?? '',
-      uses: pharmacy.uses ?? '',
-      usageInstructions: pharmacy.usageInstructions ?? '',
-      manufacturer: pharmacy.manufacturer ?? ''
-    };
   });
+
+  useEffect(() => {
+    fetchFoodAndCategories();
+  }, [id]);
+
+  const fetchFoodAndCategories = async () => {
+    try {
+      setLoading(true);
+      const [food, cats] = await Promise.all([
+        foodService.getById(id),
+        categoryService.getAll()
+      ]);
+
+      setCategories(cats);
+
+      if (food) {
+        setFormData({
+          code: food.code ?? '',
+          foodName: food.foodName ?? '',
+          categoryId: food.categoryId ? String(food.categoryId) : '',
+          price: food.price ? String(food.price) : '',
+          expiredDate: food.expiredDate ? new Date(food.expiredDate).toISOString().split('T')[0] : '',
+          stock: food.stock ? String(food.stock) : '',
+          manufacturer: food.manufacturer ?? ''
+        });
+      }
+    } catch (error) {
+      console.error('Error fetching food:', error);
+      alert('Không thể tải thông tin thực phẩm. Vui lòng thử lại.');
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -63,21 +63,43 @@ const EditAgentForm = () => {
     }));
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    // TODO: Xử lý cập nhật dữ liệu
-    console.log('Update pharmacy:', formData);
-    alert('Đã cập nhật thông tin dược phẩm thành công!');
-    navigate('/phamacy');
+    try {
+      setSaving(true);
+      // Map formData sang format API
+      const foodData = {
+        code: formData.code,
+        foodName: formData.foodName,
+        categoryId: Number(formData.categoryId),
+        price: Number(formData.price) || 0,
+        stock: Number(formData.stock) || 0,
+        expiredDate: formData.expiredDate ? new Date(formData.expiredDate).toISOString() : null,
+        manufacturer: formData.manufacturer
+      };
+
+      await foodService.update(id, foodData);
+      alert('Đã cập nhật thông tin thực phẩm thành công!');
+      navigate('/food');
+    } catch (error) {
+      console.error('Error updating food:', error);
+      alert('Có lỗi xảy ra khi cập nhật thực phẩm. Vui lòng thử lại.');
+    } finally {
+      setSaving(false);
+    }
   };
 
   const handleBack = () => {
-    navigate('/phamacy');
+    navigate('/food');
   };
+
+  if (loading) {
+    return <div className="text-center py-4">Đang tải dữ liệu...</div>;
+  }
 
   return (
     <div>
-      <h5 className="mb-4">Sửa Thông Tin Dược Phẩm</h5>
+      <h5 className="mb-4">Sửa Thông Tin Thực Phẩm</h5>
       
       <Form onSubmit={handleSubmit}>
         <Row className="mb-3">
@@ -99,13 +121,13 @@ const EditAgentForm = () => {
           <Col md={2}>
             <Form.Label className="fw-bold">Tên:</Form.Label>
           </Col>
-          <Col md={4}>
+          <Col md={3}>
             <Form.Control
               type="text"
-              name="name"
-              value={formData.name}
+              name="foodName"
+              value={formData.foodName}
               onChange={handleChange}
-              placeholder="<Tên Dược Phẩm>"
+              placeholder="<Tên Thực Phẩm>"
               required
             />
           </Col>
@@ -115,16 +137,19 @@ const EditAgentForm = () => {
           <Col md={2}>
             <Form.Label className="fw-bold">Loại:</Form.Label>
           </Col>
-          <Col md={4}>
+          <Col md={2}>
             <Form.Select
-              name="type"
-              value={formData.type}
+              name="categoryId"
+              value={formData.categoryId}
               onChange={handleChange}
               required
             >
-              <option value="">Danh sách (Thực Phẩm Chức Năng, Thuốc Kê Theo Đơn)</option>
-              <option value="Thực Phẩm Chức Năng">Thực Phẩm Chức Năng</option>
-              <option value="Thuốc Kê Theo Đơn">Thuốc Kê Theo Đơn</option>
+            
+              {categories.map(category => (
+                <option key={category.id} value={category.id}>
+                  {category.categoryName}
+                </option>
+              ))}
             </Form.Select>
           </Col>
         </Row>
@@ -148,14 +173,13 @@ const EditAgentForm = () => {
 
         <Row className="mb-3">
           <Col md={2}>
-            <Form.Label className="fw-bold">Công dụng:</Form.Label>
+            <Form.Label className="fw-bold">Ngày hết hạn:</Form.Label>
           </Col>
-          <Col md={4}>
+          <Col md={2}>
             <Form.Control
-              as="textarea"
-              rows={1}
-              name="uses"
-              value={formData.uses}
+              type="date"
+              name="expiredDate"
+              value={formData.expiredDate}
               onChange={handleChange}
               required
             />
@@ -164,16 +188,17 @@ const EditAgentForm = () => {
 
         <Row className="mb-3">
           <Col md={2}>
-            <Form.Label className="fw-bold">Hướng dẫn sử dụng:</Form.Label>
+            <Form.Label className="fw-bold">Số lượng (kg):</Form.Label>
           </Col>
-          <Col md={4}>
+          <Col md={2}>
             <Form.Control
-              as="textarea"
-              rows={2}
-              name="usageInstructions"
-              value={formData.usageInstructions}
+              type="number"
+              name="stock"
+              value={formData.stock}
               onChange={handleChange}
-              placeholder="<Hướng dẫn sử dụng>"
+              placeholder="(số nguyên)"
+              min="0"
+              step="1"
               required
             />
           </Col>
@@ -197,10 +222,10 @@ const EditAgentForm = () => {
 
         <Row className="mt-4">
           <Col md={12} className="d-flex gap-2">
-            <Button variant="primary" type="submit">
-              Save
+            <Button variant="primary" type="submit" disabled={saving}>
+              {saving ? 'Đang lưu...' : 'Save'}
             </Button>
-            <Button variant="secondary" type="button" onClick={handleBack}>
+            <Button variant="secondary" type="button" onClick={handleBack} disabled={saving}>
               Quay Lại
             </Button>
           </Col>

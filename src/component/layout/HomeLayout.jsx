@@ -20,7 +20,7 @@ const HomeLayout = ({ children, onLogout, showSidebar = true }) => {
                                 <Nav.Link as={NavLink} to="/" end>Trang Chủ</Nav.Link>
                             </Nav.Item>
                             <Nav.Item>
-                                <Nav.Link as={NavLink} to="/phamacy">Danh Sách Dược Phẩm</Nav.Link>
+                                <Nav.Link as={NavLink} to="/food">Danh Sách Thực Phẩm</Nav.Link>
                             </Nav.Item>
                         </Nav>
                     </Container>

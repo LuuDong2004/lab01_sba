@@ -11,7 +11,7 @@ import { Routes, Route, Navigate, useNavigate, useLocation } from "react-router-
 function HomePage() {
   return (
     <div className="text-center" style={{ paddingTop: '100px' }}>
-      <h4>Chào Mừng Bạn Đến Với Hệ Thống Quản Lý Dược Phẩm</h4>
+      <h4>Chào Mừng Bạn Đến Với Hệ Thống Quản Lý Thực Phẩm</h4>
     </div>
   );
 }
@@ -60,13 +60,13 @@ function AppLayout() {
   return (
     <HomeLayout
       onLogout={handleLogout}
-      onListAgent={() => navigate("/phamacy")}
+      onListAgent={() => navigate("/food")}
     >
       <Routes>
         <Route path="/" element={<HomePage />} />
-        <Route path="/phamacy" element={<AgentPageWrapper />} />
-        <Route path="/phamacy/add" element={<AddAgentForm />} />
-        <Route path="/phamacy/edit/:id" element={<EditAgentForm key={location.pathname} />} />
+        <Route path="/food" element={<AgentPageWrapper />} />
+        <Route path="/food/add" element={<AddAgentForm />} />
+        <Route path="/food/edit/:id" element={<EditAgentForm key={location.pathname} />} />
         <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>
     </HomeLayout>

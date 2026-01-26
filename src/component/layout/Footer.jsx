@@ -8,9 +8,9 @@ const Footer = () => {
             <Container fluid>
                 <Row>
                     <Col md={6}>
-                        <div><strong>@2015, Bản Quyền Thuộc Công Ty Phamacy Inc</strong></div>
+                        <div><strong>@2015, Bản Quyền Thuộc Công Ty Food Inc</strong></div>
                         <div>Địa Chỉ: Khu Công Nghệ Cao Hòa Lạc</div>
-                        <div>Liên Hệ: phamacy@com.vn</div>
+                        <div>Liên Hệ: food@com.vn</div>
                     </Col>
                     <Col md={6} className="text-md-end d-flex align-items-end justify-content-md-end">
                         <div>Giới Thiệu | Hỗ Trợ | Nghề Nghiệp</div>

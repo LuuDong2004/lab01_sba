@@ -1,14 +1,32 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Row, Col, Form, Button } from 'react-bootstrap';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import { useNavigate } from 'react-router-dom';
+import { categoryService } from '../../services/categoryService';
 
 const SearchAgent = ({ onSearch }) => {
     const [searchData, setSearchData] = useState({
-        type: '',
+        categoryId: '',
         name: ''
     });
+    const [categories, setCategories] = useState([]);
+    const [loading, setLoading] = useState(true);
     const navigate = useNavigate();
+
+    useEffect(() => {
+        fetchCategories();
+    }, []);
+
+    const fetchCategories = async () => {
+        try {
+            const data = await categoryService.getAll();
+            setCategories(data);
+        } catch (error) {
+            console.error('Error fetching categories:', error);
+        } finally {
+            setLoading(false);
+        }
+    };
 
     const handleChange = (e) => {
         const { name, value } = e.target;
@@ -21,13 +39,18 @@ const SearchAgent = ({ onSearch }) => {
     const handleSearch = (e) => {
         e.preventDefault();
         if (onSearch) {
-            onSearch(searchData);
+            // Map searchData với categoryId
+            const filters = {
+                name: searchData.name || '',
+                categoryId: searchData.categoryId ? Number(searchData.categoryId) : null
+            };
+            onSearch(filters);
         }
     };
 
     return (
         <div className="mb-4">
-            <h5 className="mb-3 text-uppercase">Danh Sách Dược Phẩm</h5>
+            <h5 className="mb-3 text-uppercase">Danh Sách Thực Phẩm</h5>
             <div className="p-3 border rounded shadow-sm bg-white">
                 <Form onSubmit={handleSearch}>
                     <Row className="mb-3 align-items-center">
@@ -36,13 +59,17 @@ const SearchAgent = ({ onSearch }) => {
                         </Col>
                         <Col md={4}>
                             <Form.Select
-                                name="type"
-                                value={searchData.type}
+                                name="categoryId"
+                                value={searchData.categoryId}
                                 onChange={handleChange}
+                                disabled={loading}
                             >
                                 <option value="">Tất cả</option>
-                                <option value="Thực Phẩm Chức Năng">Thực Phẩm Chức Năng</option>
-                                <option value="Thuốc Kê Theo Đơn">Thuốc Kê Theo Đơn</option>
+                                {categories.map(category => (
+                                    <option key={category.id} value={category.id}>
+                                        {category.categoryName}
+                                    </option>
+                                ))}
                             </Form.Select>
                         </Col>
 
@@ -68,7 +95,7 @@ const SearchAgent = ({ onSearch }) => {
                         <Col md={2}> 
                          <Button
                             variant="primary"
-                            onClick={() => navigate('/phamacy/add')}
+                            onClick={() => navigate('/food/add')}
                             className="me-2"
                         >
                             Thêm Mới
